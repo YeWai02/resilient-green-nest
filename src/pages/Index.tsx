@@ -87,7 +87,7 @@ const Index = () => {
               <Button size="lg" className="bg-green-500/90 backdrop-blur-sm hover:bg-green-600/90 text-white px-8 py-3 rounded-full font-semibold transform hover:scale-105 transition-all duration-200 border border-white/20 shadow-lg" onClick={() => setIsLoggedIn(true)}>
                 Join the Movement
               </Button>
-              <Button size="lg" variant="outline" onClick={() => setActiveTab("insurance")} className="border-white/30 hover:bg-white/20 backdrop-blur-sm px-8 py-3 rounded-full font-semibold transform hover:scale-105 transition-all duration-200 text-white shadow-lg">
+              <Button size="lg" variant="outline" onClick={() => setActiveTab("insurance")} className="bg-white hover:bg-white/90 text-green-600 hover:text-green-700 border-white px-8 py-3 rounded-full font-semibold transform hover:scale-105 transition-all duration-200 shadow-lg">
                 Explore Insurance
               </Button>
             </div>

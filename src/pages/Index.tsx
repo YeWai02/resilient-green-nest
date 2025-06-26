@@ -52,7 +52,7 @@ const Index = () => {
       <div className="relative overflow-hidden min-h-screen bg-cover bg-center bg-no-repeat text-white" 
            style={{ backgroundImage: "url('/lovable-uploads/00c73161-bb2d-4a38-bfaa-7d0669cafd22.png')" }}>
         {/* Glassmorphism overlay */}
-        <div className="absolute inset-0 bg-gradient-to-r from-emerald-600/80 via-teal-600/70 to-cyan-600/80 backdrop-blur-sm"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-emerald-600/80 via-teal-600/70 to-cyan-600/80 backdrop-blur-[2px]"></div>
         
         <div className="relative max-w-7xl mx-auto px-4 py-16 sm:px-6 lg:px-8 min-h-screen flex items-center">
           <div className="text-center w-full">

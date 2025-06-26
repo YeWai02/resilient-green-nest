@@ -8,7 +8,6 @@ import QRCodeDisplay from "@/components/QRCodeDisplay";
 import TrashStepScanner from "@/components/TrashStepScanner";
 import Leaderboard from "@/components/Leaderboard";
 import { generateUserQRCode } from "@/utils/qrCodeUtils";
-
 const Index = () => {
   const [greenPoints, setGreenPoints] = useState(245);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -27,7 +26,7 @@ const Index = () => {
 
   // Demo user data
   const userData = {
-    name: "Kyaw Gyi",
+    name: "Maya Chen",
     location: "Yangon, Myanmar",
     level: "Climate Champion",
     streak: currentStreak,
@@ -48,14 +47,11 @@ const Index = () => {
     setLastScanTime(Date.now());
   };
   return <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-amber-50">
-      {/* Hero Section with Background Image and Glassmorphism */}
-      <div className="relative overflow-hidden min-h-screen bg-cover bg-center bg-no-repeat text-white" 
-           style={{ backgroundImage: "url('/lovable-uploads/00c73161-bb2d-4a38-bfaa-7d0669cafd22.png')" }}>
-        {/* Glassmorphism overlay */}
-        <div className="absolute inset-0 bg-gradient-to-r from-emerald-600/80 via-teal-600/70 to-cyan-600/80 backdrop-blur-sm"></div>
-        
-        <div className="relative max-w-7xl mx-auto px-4 py-16 sm:px-6 lg:px-8 min-h-screen flex items-center">
-          <div className="text-center w-full">
+      {/* Hero Section */}
+      <div className="relative overflow-hidden bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 text-white">
+        <div className="absolute inset-0 bg-black/20"></div>
+        <div className="relative max-w-7xl mx-auto px-4 py-16 sm:px-6 lg:px-8">
+          <div className="text-center">
             <div className="flex items-center justify-center mb-6">
               <Leaf className="h-12 w-12 text-green-300 mr-3" />
               <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-green-300 to-blue-300 bg-clip-text text-transparent">
@@ -67,27 +63,27 @@ const Index = () => {
               eco-actions, and collective impact.
             </p>
             
-            {/* Community Stats with Enhanced Glassmorphism */}
+            {/* Community Stats */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-2xl mx-auto mb-8">
-              <div className="bg-white/20 backdrop-blur-md rounded-xl p-4 border border-white/20 shadow-lg">
+              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
                 <div className="text-2xl font-bold text-green-300">{communityStats.weeklyParticipants}</div>
                 <div className="text-sm text-green-100">Active this week</div>
               </div>
-              <div className="bg-white/20 backdrop-blur-md rounded-xl p-4 border border-white/20 shadow-lg">
+              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
                 <div className="text-2xl font-bold text-blue-300">{communityStats.cityTrashCaptured}</div>
                 <div className="text-sm text-blue-100">Trash captured</div>
               </div>
-              <div className="bg-white/20 backdrop-blur-md rounded-xl p-4 border border-white/20 shadow-lg">
+              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
                 <div className="text-2xl font-bold text-amber-300">{communityStats.insuredResidents}</div>
                 <div className="text-sm text-amber-100">Protected residents</div>
               </div>
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" className="bg-green-500/90 backdrop-blur-sm hover:bg-green-600/90 text-white px-8 py-3 rounded-full font-semibold transform hover:scale-105 transition-all duration-200 border border-white/20 shadow-lg" onClick={() => setIsLoggedIn(true)}>
+              <Button size="lg" className="bg-green-500 hover:bg-green-600 text-white px-8 py-3 rounded-full font-semibold transform hover:scale-105 transition-all duration-200" onClick={() => setIsLoggedIn(true)}>
                 Join the Movement
               </Button>
-              <Button size="lg" variant="outline" onClick={() => setActiveTab("insurance")} className="border-white/30 hover:bg-white/20 backdrop-blur-sm px-8 py-3 rounded-full font-semibold transform hover:scale-105 transition-all duration-200 text-white shadow-lg">
+              <Button size="lg" variant="outline" onClick={() => setActiveTab("insurance")} className="border-white py-3 rounded-full font-semibold transform hover:scale-105 transition-all duration-200 text-green-400 bg-slate-100 px-[26px]">
                 Explore Insurance
               </Button>
             </div>
@@ -562,5 +558,4 @@ const Index = () => {
         </div>}
     </div>;
 };
-
 export default Index;

@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -15,29 +14,52 @@ import {
   Gift,
   TrendingUp,
   Heart,
-  Star
+  Star,
+  Zap
 } from "lucide-react";
+import QRCodeDisplay from "@/components/QRCodeDisplay";
+import TrashStepScanner from "@/components/TrashStepScanner";
+import Leaderboard from "@/components/Leaderboard";
+import { generateUserQRCode } from "@/utils/qrCodeUtils";
 
 const Index = () => {
   const [greenPoints, setGreenPoints] = useState(245);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [activeTab, setActiveTab] = useState("dashboard");
+  const [userQRCode, setUserQRCode] = useState("");
+  const [lastScanTime, setLastScanTime] = useState<number | null>(null);
+  const [currentStreak, setCurrentStreak] = useState(12);
+
+  // Generate user QR code on login
+  useEffect(() => {
+    if (isLoggedIn && !userQRCode) {
+      const userId = "user123"; // In real app, this would come from auth
+      setUserQRCode(generateUserQRCode(userId));
+    }
+  }, [isLoggedIn, userQRCode]);
 
   // Demo user data
   const userData = {
     name: "Maya Chen",
     location: "Yangon, Myanmar",
     level: "Climate Champion",
-    streak: 12,
+    streak: currentStreak,
     totalTrashCaptured: 28,
     co2Saved: "15.2 kg",
     treesPlanted: 3
   };
 
+  // Community Stats
   const communityStats = {
     weeklyParticipants: 835,
     cityTrashCaptured: "2.3 tons",
     insuredResidents: "12,450"
+  };
+
+  const handlePointsEarned = (points: number, streak: number) => {
+    setGreenPoints(prev => prev + points);
+    setCurrentStreak(streak);
+    setLastScanTime(Date.now());
   };
 
   return (
@@ -212,56 +234,203 @@ const Index = () => {
             </div>
           )}
 
-          {/* TrashStep Content */}
+          {/* TrashStep Content - Updated */}
           {activeTab === "trashstep" && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center text-green-700">
-                    <QrCode className="h-5 w-5 mr-2" />
-                    Scan TrashStep Bin
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="text-center">
-                  <div className="w-48 h-48 bg-gray-100 rounded-lg mx-auto mb-4 flex items-center justify-center">
-                    <Camera className="h-12 w-12 text-gray-400" />
-                  </div>
-                  <p className="text-gray-600 mb-4">
-                    Scan the QR code on any TrashStep bin to earn 5 Green Points!
-                  </p>
-                  <Button className="bg-green-500 hover:bg-green-600 text-white w-full">
-                    Open Camera Scanner
-                  </Button>
-                </CardContent>
-              </Card>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* QR Code Display */}
+              <QRCodeDisplay 
+                userId="user123"
+                qrData={userQRCode}
+              />
 
+              {/* TrashStep Scanner */}
+              <TrashStepScanner
+                userId="user123"
+                onPointsEarned={handlePointsEarned}
+                lastScanTime={lastScanTime}
+                currentStreak={currentStreak}
+              />
+
+              {/* Enhanced Stats & Milestones */}
               <Card>
                 <CardHeader>
-                  <CardTitle className="flex items-center text-blue-700">
-                    <MapPin className="h-5 w-5 mr-2" />
-                    Nearby Bins
+                  <CardTitle className="flex items-center text-purple-700">
+                    <Zap className="h-5 w-5 mr-2" />
+                    Your Milestones
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-3">
-                    {[
-                      { location: "Sule Pagoda Plaza", distance: "0.2 km", points: 5 },
-                      { location: "Yangon Central Park", distance: "0.5 km", points: 5 },
-                      { location: "Bogyoke Market", distance: "0.8 km", points: 5 }
-                    ].map((bin, index) => (
-                      <div key={index} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                        <div>
-                          <div className="font-medium">{bin.location}</div>
-                          <div className="text-sm text-gray-600">{bin.distance} away</div>
-                        </div>
-                        <Badge className="bg-green-100 text-green-800">
-                          +{bin.points} pts
+                  <div className="space-y-4">
+                    {/* Streak Progress */}
+                    <div>
+                      <div className="flex justify-between text-sm mb-2">
+                        <span>🔥 Current Streak</span>
+                        <span>{currentStreak} days</span>
+                      </div>
+                      <Progress value={(currentStreak % 30) * 3.33} className="h-3" />
+                      <div className="text-xs text-gray-600 mt-1">
+                        Next milestone: 30 days
+                      </div>
+                    </div>
+
+                    {/* Trash Milestone */}
+                    <div>
+                      <div className="flex justify-between text-sm mb-2">
+                        <span>🗑️ Trash Captured</span>
+                        <span>{userData.totalTrashCaptured}/50</span>
+                      </div>
+                      <Progress value={(userData.totalTrashCaptured / 50) * 100} className="h-3" />
+                      <div className="text-xs text-gray-600 mt-1">
+                        22 more for Bronze Eco Badge
+                      </div>
+                    </div>
+
+                    {/* Available Badges */}
+                    <div className="pt-4 border-t">
+                      <h4 className="font-medium mb-3">Available Badges</h4>
+                      <div className="space-y-2">
+                        <Badge className="bg-amber-100 text-amber-800 w-full justify-start">
+                          🥉 Bronze Eco (50 items)
                         </Badge>
+                        <Badge variant="outline" className="w-full justify-start opacity-50">
+                          🥈 Silver Eco (100 items)
+                        </Badge>
+                        <Badge variant="outline" className="w-full justify-start opacity-50">
+                          🥇 Gold Eco (200 items)
+                        </Badge>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Nearby Bins - Enhanced */}
+              <Card className="lg:col-span-3">
+                <CardHeader>
+                  <CardTitle className="flex items-center text-blue-700">
+                    <MapPin className="h-5 w-5 mr-2" />
+                    Active TrashStep Stations
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {[
+                      { 
+                        location: "Sule Pagoda Plaza", 
+                        distance: "0.2 km", 
+                        points: 5, 
+                        status: "Active",
+                        trashLevel: "75%"
+                      },
+                      { 
+                        location: "Yangon Central Park", 
+                        distance: "0.5 km", 
+                        points: 5, 
+                        status: "Active",
+                        trashLevel: "45%"
+                      },
+                      { 
+                        location: "Bogyoke Market", 
+                        distance: "0.8 km", 
+                        points: 5, 
+                        status: "Full",
+                        trashLevel: "100%"
+                      }
+                    ].map((station, index) => (
+                      <div key={index} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                        <div className="flex justify-between items-start mb-2">
+                          <div>
+                            <div className="font-medium">{station.location}</div>
+                            <div className="text-sm text-gray-600">{station.distance} away</div>
+                          </div>
+                          <Badge 
+                            className={`${
+                              station.status === 'Active' 
+                                ? 'bg-green-100 text-green-800' 
+                                : 'bg-red-100 text-red-800'
+                            }`}
+                          >
+                            {station.status}
+                          </Badge>
+                        </div>
+                        <div className="space-y-2">
+                          <div className="flex justify-between text-sm">
+                            <span>Trash Level</span>
+                            <span>{station.trashLevel}</span>
+                          </div>
+                          <Progress 
+                            value={parseInt(station.trashLevel)} 
+                            className="h-2"
+                          />
+                          <div className="flex justify-between items-center">
+                            <span className="text-green-600 font-medium">
+                              +{station.points} pts per capture
+                            </span>
+                            <Button 
+                              size="sm" 
+                              disabled={station.status === 'Full'}
+                              className="bg-green-500 hover:bg-green-600 text-white"
+                            >
+                              Navigate
+                            </Button>
+                          </div>
+                        </div>
                       </div>
                     ))}
                   </div>
                 </CardContent>
               </Card>
+            </div>
+          )}
+
+          {/* Community Content - Enhanced with Leaderboard */}
+          {activeTab === "community" && (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Existing Nature Nest Events */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center text-green-700">
+                    <Users className="h-5 w-5 mr-2" />
+                    Nature Nest Events
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {[
+                      {
+                        title: "Community Garden Workshop",
+                        date: "March 15, 2024",
+                        location: "Inya Lake Park",
+                        participants: 24,
+                        points: 25
+                      },
+                      {
+                        title: "Urban Mural Painting",
+                        date: "March 20, 2024", 
+                        location: "Downtown Yangon",
+                        participants: 18,
+                        points: 30
+                      }
+                    ].map((event, index) => (
+                      <div key={index} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                        <h3 className="font-semibold text-gray-900 mb-2">{event.title}</h3>
+                        <div className="text-sm text-gray-600 space-y-1">
+                          <div>📅 {event.date}</div>
+                          <div>📍 {event.location}</div>
+                          <div>👥 {event.participants} joined</div>
+                          <div className="text-green-600 font-medium">+{event.points} Green Points</div>
+                        </div>
+                        <Button className="mt-3 w-full bg-green-500 hover:bg-green-600 text-white">
+                          Join Event
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* New Leaderboard */}
+              <Leaderboard />
             </div>
           )}
 
@@ -333,53 +502,6 @@ const Index = () => {
                   <Button className="w-full bg-blue-500 hover:bg-blue-600 text-white">
                     Choose Premium
                   </Button>
-                </CardContent>
-              </Card>
-            </div>
-          )}
-
-          {/* Community Content */}
-          {activeTab === "community" && (
-            <div className="space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center text-green-700">
-                    <Users className="h-5 w-5 mr-2" />
-                    Nature Nest Events
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {[
-                      {
-                        title: "Community Garden Workshop",
-                        date: "March 15, 2024",
-                        location: "Inya Lake Park",
-                        participants: 24,
-                        points: 25
-                      },
-                      {
-                        title: "Urban Mural Painting",
-                        date: "March 20, 2024", 
-                        location: "Downtown Yangon",
-                        participants: 18,
-                        points: 30
-                      }
-                    ].map((event, index) => (
-                      <div key={index} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
-                        <h3 className="font-semibold text-gray-900 mb-2">{event.title}</h3>
-                        <div className="text-sm text-gray-600 space-y-1">
-                          <div>📅 {event.date}</div>
-                          <div>📍 {event.location}</div>
-                          <div>👥 {event.participants} joined</div>
-                          <div className="text-green-600 font-medium">+{event.points} Green Points</div>
-                        </div>
-                        <Button className="mt-3 w-full bg-green-500 hover:bg-green-600 text-white">
-                          Join Event
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
                 </CardContent>
               </Card>
             </div>

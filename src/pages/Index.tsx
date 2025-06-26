@@ -26,7 +26,7 @@ const Index = () => {
 
   // Demo user data
   const userData = {
-    name: "Maya Chen",
+    name: "Kyaw Gyi",
     location: "Yangon, Myanmar",
     level: "Climate Champion",
     streak: currentStreak,

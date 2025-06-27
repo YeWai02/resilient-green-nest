@@ -3,6 +3,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Trophy, Medal, Award, Star } from "lucide-react";
+import { useTranslation } from "@/contexts/TranslationContext";
 
 interface LeaderboardEntry {
   rank: number;
@@ -14,6 +15,8 @@ interface LeaderboardEntry {
 }
 
 const Leaderboard: React.FC = () => {
+  const { t } = useTranslation();
+  
   const leaderboardData: LeaderboardEntry[] = [
     { rank: 1, name: "Aung Min", points: 850, trashCaptured: 170, badge: "Climate Hero", city: "Yangon" },
     { rank: 2, name: "Siti Rahman", points: 720, trashCaptured: 144, badge: "Eco Champion", city: "Kuala Lumpur" },
@@ -53,7 +56,7 @@ const Leaderboard: React.FC = () => {
       <CardHeader>
         <CardTitle className="flex items-center text-amber-700">
           <Trophy className="h-5 w-5 mr-2" />
-          ASEAN Leaderboard
+          {t('community.leaderboard')}
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -79,10 +82,10 @@ const Leaderboard: React.FC = () => {
                 </div>
                 <div className="text-right">
                   <div className={`text-lg font-bold ${entry.rank <= 3 ? 'text-white' : 'text-green-600'}`}>
-                    {entry.points} pts
+                    {entry.points} {t('community.pts')}
                   </div>
                   <div className={`text-sm ${entry.rank <= 3 ? 'text-white/80' : 'text-gray-600'}`}>
-                    {entry.trashCaptured} items
+                    {entry.trashCaptured} {t('community.items')}
                   </div>
                 </div>
               </div>

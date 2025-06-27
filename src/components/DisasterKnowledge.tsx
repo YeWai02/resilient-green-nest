@@ -3,14 +3,16 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Shield, AlertTriangle, Heart, BookOpen, Zap, Droplets, Wind, Flame } from "lucide-react";
+import { useTranslation } from "@/contexts/TranslationContext";
 
 const DisasterKnowledge: React.FC = () => {
   const [activeDisaster, setActiveDisaster] = useState('flood');
+  const { t } = useTranslation();
 
   const disasters = {
     flood: {
       icon: Droplets,
-      title: "Flood Management",
+      title: t('disaster.flood'),
       prevention: [
         "Install proper drainage systems",
         "Keep storm drains clear of debris",
@@ -32,7 +34,7 @@ const DisasterKnowledge: React.FC = () => {
     },
     typhoon: {
       icon: Wind,
-      title: "Typhoon Preparedness",
+      title: t('disaster.typhoon'),
       prevention: [
         "Strengthen building structures",
         "Trim trees near buildings",
@@ -54,7 +56,7 @@ const DisasterKnowledge: React.FC = () => {
     },
     wildfire: {
       icon: Flame,
-      title: "Wildfire Safety",
+      title: t('disaster.wildfire'),
       prevention: [
         "Create defensible space around homes",
         "Use fire-resistant building materials",
@@ -82,8 +84,8 @@ const DisasterKnowledge: React.FC = () => {
   return (
     <div className="space-y-6">
       <div className="text-center mb-8">
-        <h2 className="text-3xl font-bold text-gray-900 mb-4">Disaster Knowledge Center</h2>
-        <p className="text-lg text-gray-600">Learn how to prevent, protect, and survive natural disasters</p>
+        <h2 className="text-3xl font-bold text-gray-900 mb-4">{t('disaster.title')}</h2>
+        <p className="text-lg text-gray-600">{t('disaster.subtitle')}</p>
       </div>
 
       {/* Disaster Type Selector */}
@@ -115,7 +117,7 @@ const DisasterKnowledge: React.FC = () => {
           <CardHeader>
             <CardTitle className="flex items-center text-green-700">
               <Shield className="h-5 w-5 mr-2" />
-              Prevention
+              {t('disaster.prevention')}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -139,7 +141,7 @@ const DisasterKnowledge: React.FC = () => {
           <CardHeader>
             <CardTitle className="flex items-center text-amber-700">
               <AlertTriangle className="h-5 w-5 mr-2" />
-              Protection
+              {t('disaster.protection')}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -163,7 +165,7 @@ const DisasterKnowledge: React.FC = () => {
           <CardHeader>
             <CardTitle className="flex items-center text-red-700">
               <Heart className="h-5 w-5 mr-2" />
-              Survival
+              {t('disaster.survival')}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -188,22 +190,22 @@ const DisasterKnowledge: React.FC = () => {
         <CardHeader>
           <CardTitle className="flex items-center">
             <Zap className="h-5 w-5 mr-2" />
-            Emergency Contacts
+            {t('disaster.emergency')}
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="text-center">
               <div className="text-2xl font-bold">199</div>
-              <div className="text-sm">Fire Department</div>
+              <div className="text-sm">{t('disaster.fire')}</div>
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold">202</div>
-              <div className="text-sm">Police</div>
+              <div className="text-sm">{t('disaster.police')}</div>
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold">192</div>
-              <div className="text-sm">Emergency Medical</div>
+              <div className="text-sm">{t('disaster.medical')}</div>
             </div>
           </div>
         </CardContent>

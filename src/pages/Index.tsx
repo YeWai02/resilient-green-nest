@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -66,7 +65,7 @@ const Index = () => {
                 className="bg-white/20 backdrop-blur-md border-white/20 text-white hover:bg-white/30"
               >
                 <LogOut className="h-4 w-4 mr-2" />
-                Logout
+                {t('nav.logout')}
               </Button>
             </div>
 
@@ -84,15 +83,15 @@ const Index = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-2xl mx-auto mb-8">
               <div className="bg-white/20 backdrop-blur-md rounded-xl p-4 border border-white/20 shadow-lg">
                 <div className="text-2xl font-bold text-green-300">{communityStats.weeklyParticipants}</div>
-                <div className="text-sm text-green-100">Active this week</div>
+                <div className="text-sm text-green-100">{t('stats.active')}</div>
               </div>
               <div className="bg-white/20 backdrop-blur-md rounded-xl p-4 border border-white/20 shadow-lg">
                 <div className="text-2xl font-bold text-blue-300">{communityStats.cityTrashCaptured}</div>
-                <div className="text-sm text-blue-100">Trash captured</div>
+                <div className="text-sm text-blue-100">{t('stats.trash')}</div>
               </div>
               <div className="bg-white/20 backdrop-blur-md rounded-xl p-4 border border-white/20 shadow-lg">
                 <div className="text-2xl font-bold text-amber-300">{communityStats.insuredResidents}</div>
-                <div className="text-sm text-amber-100">Protected residents</div>
+                <div className="text-sm text-amber-100">{t('stats.protected')}</div>
               </div>
             </div>
           </div>
@@ -165,26 +164,26 @@ const Index = () => {
               <CardHeader>
                 <CardTitle className="flex items-center text-green-700">
                   <TrendingUp className="h-5 w-5 mr-2" />
-                  Your Environmental Impact
+                  {t('dashboard.impact')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   <div className="text-center p-4 bg-green-50 rounded-lg">
                     <div className="text-2xl font-bold text-green-600">{user?.totalTrashCaptured}</div>
-                    <div className="text-sm text-green-700">Trash Items</div>
+                    <div className="text-sm text-green-700">{t('dashboard.trash.items')}</div>
                   </div>
                   <div className="text-center p-4 bg-blue-50 rounded-lg">
                     <div className="text-2xl font-bold text-blue-600">{user?.co2Saved}</div>
-                    <div className="text-sm text-blue-700">CO₂ Avoided</div>
+                    <div className="text-sm text-blue-700">{t('dashboard.co2.avoided')}</div>
                   </div>
                   <div className="text-center p-4 bg-amber-50 rounded-lg">
                     <div className="text-2xl font-bold text-amber-600">{user?.treesPlanted}</div>
-                    <div className="text-sm text-amber-700">Trees Planted</div>
+                    <div className="text-sm text-amber-700">{t('dashboard.trees.planted')}</div>
                   </div>
                   <div className="text-center p-4 bg-purple-50 rounded-lg">
                     <div className="text-2xl font-bold text-purple-600">{user?.streak}</div>
-                    <div className="text-sm text-purple-700">Day Streak</div>
+                    <div className="text-sm text-purple-700">{t('dashboard.day.streak')}</div>
                   </div>
                 </div>
               </CardContent>
@@ -195,20 +194,20 @@ const Index = () => {
               <CardHeader>
                 <CardTitle className="flex items-center text-amber-700">
                   <Trophy className="h-5 w-5 mr-2" />
-                  Weekly Mission
+                  {t('dashboard.mission')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   <div>
                     <div className="flex justify-between text-sm mb-2">
-                      <span>Capture 10 trash items</span>
+                      <span>{t('dashboard.mission.capture')}</span>
                       <span>7/10</span>
                     </div>
                     <Progress value={70} className="h-3" />
                   </div>
                   <Button className="w-full bg-amber-500 hover:bg-amber-600 text-white">
-                    Continue Mission
+                    {t('dashboard.mission.continue')}
                   </Button>
                 </div>
               </CardContent>
@@ -227,26 +226,26 @@ const Index = () => {
               <CardHeader>
                 <CardTitle className="flex items-center text-purple-700">
                   <Zap className="h-5 w-5 mr-2" />
-                  Your Milestones
+                  {t('dashboard.milestones')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   <div>
                     <div className="flex justify-between text-sm mb-2">
-                      <span>🔥 Current Streak</span>
+                      <span>🔥 {t('dashboard.current.streak')}</span>
                       <span>{user?.streak} days</span>
                     </div>
                     <Progress value={((user?.streak || 0) % 30) * 3.33} className="h-3" />
-                    <div className="text-xs text-gray-600 mt-1">Next milestone: 30 days</div>
+                    <div className="text-xs text-gray-600 mt-1">{t('dashboard.next.milestone')}</div>
                   </div>
                   <div>
                     <div className="flex justify-between text-sm mb-2">
-                      <span>🗑️ Trash Captured</span>
+                      <span>🗑️ {t('dashboard.trash.captured')}</span>
                       <span>{user?.totalTrashCaptured}/50</span>
                     </div>
                     <Progress value={(user?.totalTrashCaptured || 0) / 50 * 100} className="h-3" />
-                    <div className="text-xs text-gray-600 mt-1">22 more for Bronze Eco Badge</div>
+                    <div className="text-xs text-gray-600 mt-1">{t('dashboard.bronze.badge')}</div>
                   </div>
                 </div>
               </CardContent>
@@ -254,7 +253,7 @@ const Index = () => {
           </div>
         )}
 
-        {/* Updated Insurance Content - Based on provided image */}
+        {/* Updated Insurance Content */}
         {activeTab === "insurance" && (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Premium Plan */}
@@ -267,25 +266,25 @@ const Index = () => {
               </CardHeader>
               <CardContent className="p-6">
                 <div className="text-center mb-4">
-                  <div className="text-2xl font-bold text-purple-600 mb-2">Comprehensive coverage</div>
-                  <div className="text-sm text-gray-600">for high-value properties in high-risk areas.</div>
+                  <div className="text-2xl font-bold text-purple-600 mb-2">{t('insurance.premium.desc')}</div>
+                  <div className="text-sm text-gray-600">{t('insurance.premium.detail')}</div>
                 </div>
                 <ul className="space-y-2 mb-6">
                   <li className="flex items-start">
                     <div className="w-2 h-2 bg-purple-500 rounded-full mt-2 mr-3"></div>
-                    <span className="text-sm">Ideal for high-risk zones and high-value properties</span>
+                    <span className="text-sm">{t('insurance.premium.feature1')}</span>
                   </li>
                   <li className="flex items-start">
                     <div className="w-2 h-2 bg-purple-500 rounded-full mt-2 mr-3"></div>
-                    <span className="text-sm">Comprehensive protection coverage</span>
+                    <span className="text-sm">{t('insurance.premium.feature2')}</span>
                   </li>
                   <li className="flex items-start">
                     <div className="w-2 h-2 bg-purple-500 rounded-full mt-2 mr-3"></div>
-                    <span className="text-sm">Premium support and fast claims</span>
+                    <span className="text-sm">{t('insurance.premium.feature3')}</span>
                   </li>
                 </ul>
                 <Button className="w-full bg-purple-500 hover:bg-purple-600 text-white">
-                  Choose Premium
+                  {t('insurance.choose')} {t('insurance.premium.title')}
                 </Button>
               </CardContent>
             </Card>
@@ -300,25 +299,25 @@ const Index = () => {
               </CardHeader>
               <CardContent className="p-6">
                 <div className="text-center mb-4">
-                  <div className="text-2xl font-bold text-blue-600 mb-2">Affordable coverage</div>
-                  <div className="text-sm text-gray-600">for moderate-risk homeowners.</div>
+                  <div className="text-2xl font-bold text-blue-600 mb-2">{t('insurance.middle.desc')}</div>
+                  <div className="text-sm text-gray-600">{t('insurance.middle.detail')}</div>
                 </div>
                 <ul className="space-y-2 mb-6">
                   <li className="flex items-start">
                     <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 mr-3"></div>
-                    <span className="text-sm">Best for moderate to low-risk areas</span>
+                    <span className="text-sm">{t('insurance.middle.feature1')}</span>
                   </li>
                   <li className="flex items-start">
                     <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 mr-3"></div>
-                    <span className="text-sm">Budget-conscious homeowners</span>
+                    <span className="text-sm">{t('insurance.middle.feature2')}</span>
                   </li>
                   <li className="flex items-start">
                     <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 mr-3"></div>
-                    <span className="text-sm">Balanced coverage and cost</span>
+                    <span className="text-sm">{t('insurance.middle.feature3')}</span>
                   </li>
                 </ul>
                 <Button className="w-full bg-blue-500 hover:bg-blue-600 text-white">
-                  Choose Middle Class
+                  {t('insurance.choose')} {t('insurance.middle.title')}
                 </Button>
               </CardContent>
             </Card>
@@ -333,25 +332,25 @@ const Index = () => {
               </CardHeader>
               <CardContent className="p-6">
                 <div className="text-center mb-4">
-                  <div className="text-2xl font-bold text-green-600 mb-2">Flexible plans</div>
-                  <div className="text-sm text-gray-600">with bundling options and additional support offers</div>
+                  <div className="text-2xl font-bold text-green-600 mb-2">{t('insurance.farmers.desc')}</div>
+                  <div className="text-sm text-gray-600">{t('insurance.farmers.detail')}</div>
                 </div>
                 <ul className="space-y-2 mb-6">
                   <li className="flex items-start">
                     <div className="w-2 h-2 bg-green-500 rounded-full mt-2 mr-3"></div>
-                    <span className="text-sm">Bundling discounts available</span>
+                    <span className="text-sm">{t('insurance.farmers.feature1')}</span>
                   </li>
                   <li className="flex items-start">
                     <div className="w-2 h-2 bg-green-500 rounded-full mt-2 mr-3"></div>
-                    <span className="text-sm">Additional flood mitigation services</span>
+                    <span className="text-sm">{t('insurance.farmers.feature2')}</span>
                   </li>
                   <li className="flex items-start">
                     <div className="w-2 h-2 bg-green-500 rounded-full mt-2 mr-3"></div>
-                    <span className="text-sm">Agricultural protection coverage</span>
+                    <span className="text-sm">{t('insurance.farmers.feature3')}</span>
                   </li>
                 </ul>
                 <Button className="w-full bg-green-500 hover:bg-green-600 text-white">
-                  Choose Farmers
+                  {t('insurance.choose')} {t('insurance.farmers.title')}
                 </Button>
               </CardContent>
             </Card>
@@ -365,7 +364,7 @@ const Index = () => {
               <CardHeader>
                 <CardTitle className="flex items-center text-green-700">
                   <Users className="h-5 w-5 mr-2" />
-                  Nature Nest Events
+                  {t('community.events')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -391,11 +390,11 @@ const Index = () => {
                       <div className="text-sm text-gray-600 space-y-1">
                         <div>📅 {event.date}</div>
                         <div>📍 {event.location}</div>
-                        <div>👥 {event.participants} joined</div>
-                        <div className="text-green-600 font-medium">+{event.points} Green Points</div>
+                        <div>👥 {event.participants} {t('community.joined')}</div>
+                        <div className="text-green-600 font-medium">+{event.points} {t('points.green')}</div>
                       </div>
                       <Button className="mt-3 w-full bg-green-500 hover:bg-green-600 text-white">
-                        Join Event
+                        {t('community.join')}
                       </Button>
                     </div>
                   ))}
@@ -411,25 +410,25 @@ const Index = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[
               {
-                name: "Solar Panel Kit",
+                name: t('rewards.solar'),
                 points: 500,
                 price: "$50",
-                impact: "Reduce 2 tons CO₂/year",
-                category: "Energy"
+                impact: t('rewards.solar.impact'),
+                category: t('rewards.energy')
               },
               {
-                name: "Recycled Tote Bag",
+                name: t('rewards.bag'),
                 points: 50,
                 price: "$5",
-                impact: "Made from 10 bottles",
-                category: "Lifestyle"
+                impact: t('rewards.bag.impact'),
+                category: t('rewards.lifestyle')
               },
               {
-                name: "Home Insulation Kit",
+                name: t('rewards.insulation'),
                 points: 300,
                 price: "$30",
-                impact: "Save 30% on cooling",
-                category: "Home"
+                impact: t('rewards.insulation.impact'),
+                category: t('rewards.home')
               }
             ].map((item, index) => (
               <Card key={index} className="hover:shadow-lg transition-shadow">
@@ -450,7 +449,7 @@ const Index = () => {
                     className="w-full bg-amber-500 hover:bg-amber-600 text-white" 
                     disabled={(user?.greenPoints || 0) < item.points}
                   >
-                    {(user?.greenPoints || 0) >= item.points ? "Redeem" : "Need more points"}
+                    {(user?.greenPoints || 0) >= item.points ? t('rewards.redeem') : t('rewards.need.more')}
                   </Button>
                 </CardContent>
               </Card>

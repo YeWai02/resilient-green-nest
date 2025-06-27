@@ -3,6 +3,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { QrCode, Copy } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useTranslation } from "@/contexts/TranslationContext";
 import { useToast } from "@/hooks/use-toast";
 
 interface QRCodeDisplayProps {
@@ -11,13 +12,14 @@ interface QRCodeDisplayProps {
 }
 
 const QRCodeDisplay: React.FC<QRCodeDisplayProps> = ({ userId, qrData }) => {
+  const { t } = useTranslation();
   const { toast } = useToast();
 
   const copyQRData = () => {
     navigator.clipboard.writeText(qrData);
     toast({
-      title: "QR Code Copied",
-      description: "Your personal QR code has been copied to clipboard.",
+      title: t('toast.qr.copied'),
+      description: t('toast.qr.desc'),
     });
   };
 
@@ -26,7 +28,7 @@ const QRCodeDisplay: React.FC<QRCodeDisplayProps> = ({ userId, qrData }) => {
       <CardHeader>
         <CardTitle className="flex items-center text-green-700">
           <QrCode className="h-5 w-5 mr-2" />
-          Your Personal QR Code
+          {t('trashstep.qr.title')}
         </CardTitle>
       </CardHeader>
       <CardContent className="text-center">
@@ -43,7 +45,7 @@ const QRCodeDisplay: React.FC<QRCodeDisplayProps> = ({ userId, qrData }) => {
           </div>
         </div>
         <p className="text-sm text-gray-600 mb-4">
-          Scan this code at TrashStep stations after capturing trash
+          {t('trashstep.qr.desc')}
         </p>
         <Button
           variant="outline"
@@ -52,7 +54,7 @@ const QRCodeDisplay: React.FC<QRCodeDisplayProps> = ({ userId, qrData }) => {
           className="border-green-200 text-green-700 hover:bg-green-50"
         >
           <Copy className="h-4 w-4 mr-2" />
-          Copy QR Data
+          {t('trashstep.qr.copy')}
         </Button>
       </CardContent>
     </Card>

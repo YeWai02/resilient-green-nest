@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Camera, Scan, CheckCircle, XCircle } from "lucide-react";
+import { useTranslation } from "@/contexts/TranslationContext";
 import { useToast } from "@/hooks/use-toast";
 import { validateQRScan, canEarnPoints } from "@/utils/qrCodeUtils";
 
@@ -23,22 +24,23 @@ const TrashStepScanner: React.FC<TrashStepScannerProps> = ({
   const [scanInput, setScanInput] = useState('');
   const [isScanning, setIsScanning] = useState(false);
   const [trashCaptured, setTrashCaptured] = useState(false);
+  const { t } = useTranslation();
   const { toast } = useToast();
 
   const simulateTrashCapture = () => {
     // Simulate TrashStep mechanism activation
     setTrashCaptured(true);
     toast({
-      title: "TrashStep Activated!",
-      description: "Trash has been lifted from drainage. Now scan your QR code.",
+      title: t('toast.trashstep.activated'),
+      description: t('toast.trashstep.desc'),
     });
   };
 
   const processQRScan = () => {
     if (!trashCaptured) {
       toast({
-        title: "No Trash Captured",
-        description: "Please step on the TrashStep pedal first to capture trash.",
+        title: t('toast.no.trash'),
+        description: t('toast.no.trash.desc'),
         variant: "destructive",
       });
       return;
@@ -46,8 +48,8 @@ const TrashStepScanner: React.FC<TrashStepScannerProps> = ({
 
     if (!canEarnPoints(lastScanTime, Date.now())) {
       toast({
-        title: "Cooldown Active",
-        description: "Please wait 30 minutes between trash captures to earn points.",
+        title: t('toast.cooldown'),
+        description: t('toast.cooldown.desc'),
         variant: "destructive",
       });
       return;
@@ -55,8 +57,8 @@ const TrashStepScanner: React.FC<TrashStepScannerProps> = ({
 
     if (!validateQRScan(scanInput, userId)) {
       toast({
-        title: "Invalid QR Code",
-        description: "This QR code doesn't belong to your account.",
+        title: t('toast.invalid.qr'),
+        description: t('toast.invalid.qr.desc'),
         variant: "destructive",
       });
       return;
@@ -70,16 +72,16 @@ const TrashStepScanner: React.FC<TrashStepScannerProps> = ({
     if (newStreak % 5 === 0) {
       pointsEarned += 10;
       toast({
-        title: "🔥 Streak Bonus!",
-        description: `${newStreak} day streak! Earned bonus +10 points!`,
+        title: t('toast.streak.bonus'),
+        description: `${newStreak} ${t('toast.streak.desc')}`,
       });
     }
 
     onPointsEarned(pointsEarned, newStreak);
     
     toast({
-      title: "✅ Trash Captured!",
-      description: `You've earned +${pointsEarned} Green Points!`,
+      title: t('toast.trash.success'),
+      description: t('toast.points.earned').replace('{points}', pointsEarned.toString()),
     });
 
     // Reset state
@@ -92,14 +94,14 @@ const TrashStepScanner: React.FC<TrashStepScannerProps> = ({
       <CardHeader>
         <CardTitle className="flex items-center text-green-700">
           <Scan className="h-5 w-5 mr-2" />
-          TrashStep Scanner
+          {t('trashstep.scanner')}
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         {/* Step 1: Trash Capture */}
         <div className="p-4 bg-gray-50 rounded-lg">
           <div className="flex items-center justify-between mb-3">
-            <span className="font-medium">Step 1: Capture Trash</span>
+            <span className="font-medium">{t('trashstep.step1')}</span>
             {trashCaptured ? (
               <CheckCircle className="h-5 w-5 text-green-500" />
             ) : (
@@ -115,19 +117,19 @@ const TrashStepScanner: React.FC<TrashStepScannerProps> = ({
                 : 'bg-blue-500 hover:bg-blue-600'
             } text-white`}
           >
-            {trashCaptured ? 'Trash Captured!' : 'Step on TrashStep Pedal'}
+            {trashCaptured ? t('trashstep.captured') : t('trashstep.pedal')}
           </Button>
         </div>
 
         {/* Step 2: QR Scan */}
         <div className="p-4 bg-gray-50 rounded-lg">
           <div className="flex items-center justify-between mb-3">
-            <span className="font-medium">Step 2: Scan Your QR Code</span>
+            <span className="font-medium">{t('trashstep.step2')}</span>
             <Camera className="h-5 w-5 text-gray-600" />
           </div>
           <div className="space-y-3">
             <Input
-              placeholder="Enter your QR code data or use camera"
+              placeholder={t('trashstep.placeholder')}
               value={scanInput}
               onChange={(e) => setScanInput(e.target.value)}
               disabled={!trashCaptured}
@@ -140,14 +142,14 @@ const TrashStepScanner: React.FC<TrashStepScannerProps> = ({
                 onClick={() => setIsScanning(!isScanning)}
               >
                 <Camera className="h-4 w-4 mr-2" />
-                Open Camera
+                {t('trashstep.camera')}
               </Button>
               <Button
                 onClick={processQRScan}
                 disabled={!trashCaptured || !scanInput}
                 className="flex-1 bg-green-500 hover:bg-green-600 text-white"
               >
-                Scan & Earn Points
+                {t('trashstep.scan')}
               </Button>
             </div>
           </div>
@@ -156,9 +158,9 @@ const TrashStepScanner: React.FC<TrashStepScannerProps> = ({
         {/* Current Streak Display */}
         <div className="text-center p-3 bg-amber-50 rounded-lg">
           <div className="text-2xl font-bold text-amber-600">🔥 {currentStreak}</div>
-          <div className="text-sm text-amber-700">Current Streak</div>
+          <div className="text-sm text-amber-700">{t('trashstep.streak')}</div>
           <div className="text-xs text-amber-600 mt-1">
-            {5 - (currentStreak % 5)} more for bonus!
+            {5 - (currentStreak % 5)} {t('trashstep.bonus')}
           </div>
         </div>
       </CardContent>

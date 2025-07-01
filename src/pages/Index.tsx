@@ -13,10 +13,16 @@ import LanguageSelector from "@/components/LanguageSelector";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTranslation } from "@/contexts/TranslationContext";
 import { generateUserQRCode } from "@/utils/qrCodeUtils";
-
 const Index = () => {
-  const { user, isLoggedIn, logout, updateGreenPoints } = useAuth();
-  const { t } = useTranslation();
+  const {
+    user,
+    isLoggedIn,
+    logout,
+    updateGreenPoints
+  } = useAuth();
+  const {
+    t
+  } = useTranslation();
   const [activeTab, setActiveTab] = useState("dashboard");
   const [userQRCode, setUserQRCode] = useState("");
   const [lastScanTime, setLastScanTime] = useState<number | null>(null);
@@ -34,7 +40,6 @@ const Index = () => {
     cityTrashCaptured: "2.3 tons",
     insuredResidents: "12,450"
   };
-
   const handlePointsEarned = (points: number, streak: number) => {
     updateGreenPoints(points);
     setLastScanTime(Date.now());
@@ -44,12 +49,11 @@ const Index = () => {
   if (!isLoggedIn) {
     return <LoginForm />;
   }
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-amber-50">
+  return <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-amber-50">
       {/* Hero Section with Background Image and Glassmorphism */}
-      <div className="relative overflow-hidden min-h-screen bg-cover bg-center bg-no-repeat text-white" 
-           style={{ backgroundImage: "url('/lovable-uploads/00c73161-bb2d-4a38-bfaa-7d0669cafd22.png')" }}>
+      <div className="relative overflow-hidden min-h-screen bg-cover bg-center bg-no-repeat text-white" style={{
+      backgroundImage: "url('/lovable-uploads/00c73161-bb2d-4a38-bfaa-7d0669cafd22.png')"
+    }}>
         {/* Glassmorphism overlay */}
         <div className="absolute inset-0 bg-gradient-to-r from-emerald-600/80 via-teal-600/70 to-cyan-600/80 backdrop-blur-none"></div>
         
@@ -58,12 +62,7 @@ const Index = () => {
             {/* Language Selector and Logout */}
             <div className="absolute top-4 right-4 flex items-center space-x-4">
               <LanguageSelector />
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={logout}
-                className="bg-white/20 backdrop-blur-md border-white/20 text-white hover:bg-white/30"
-              >
+              <Button variant="outline" size="sm" onClick={logout} className="bg-white/20 backdrop-blur-md border-white/20 text-white hover:bg-white/30">
                 <LogOut className="h-4 w-4 mr-2" />
                 {t('nav.logout')}
               </Button>
@@ -71,7 +70,7 @@ const Index = () => {
 
             <div className="flex items-center justify-center mb-6">
               <Leaf className="h-12 w-12 text-green-300 mr-3" />
-              <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-green-300 to-blue-300 bg-clip-text text-transparent">
+              <h1 className="md:text-6xl font-bold bg-gradient-to-r from-green-300 to-blue-300 bg-clip-text text-center text-[#020302]/[0.77] text-4xl">
                 {t('hero.title')}
               </h1>
             </div>
@@ -132,33 +131,38 @@ const Index = () => {
 
         {/* Navigation Tabs */}
         <div className="flex flex-wrap gap-2 mb-8">
-          {[
-            { id: "dashboard", label: t('nav.dashboard'), icon: TrendingUp },
-            { id: "trashstep", label: t('nav.trashstep'), icon: QrCode },
-            { id: "insurance", label: t('nav.insurance'), icon: Shield },
-            { id: "community", label: t('nav.community'), icon: Users },
-            { id: "rewards", label: t('nav.rewards'), icon: Gift },
-            { id: "knowledge", label: t('nav.knowledge'), icon: BookOpen }
-          ].map(tab => (
-            <Button
-              key={tab.id}
-              variant={activeTab === tab.id ? "default" : "outline"}
-              className={`flex items-center space-x-2 rounded-full ${
-                activeTab === tab.id 
-                  ? "bg-green-500 hover:bg-green-600 text-white" 
-                  : "border-green-200 text-green-700 hover:bg-green-50"
-              }`}
-              onClick={() => setActiveTab(tab.id)}
-            >
+          {[{
+          id: "dashboard",
+          label: t('nav.dashboard'),
+          icon: TrendingUp
+        }, {
+          id: "trashstep",
+          label: t('nav.trashstep'),
+          icon: QrCode
+        }, {
+          id: "insurance",
+          label: t('nav.insurance'),
+          icon: Shield
+        }, {
+          id: "community",
+          label: t('nav.community'),
+          icon: Users
+        }, {
+          id: "rewards",
+          label: t('nav.rewards'),
+          icon: Gift
+        }, {
+          id: "knowledge",
+          label: t('nav.knowledge'),
+          icon: BookOpen
+        }].map(tab => <Button key={tab.id} variant={activeTab === tab.id ? "default" : "outline"} className={`flex items-center space-x-2 rounded-full ${activeTab === tab.id ? "bg-green-500 hover:bg-green-600 text-white" : "border-green-200 text-green-700 hover:bg-green-50"}`} onClick={() => setActiveTab(tab.id)}>
               <tab.icon className="h-4 w-4" />
               <span>{tab.label}</span>
-            </Button>
-          ))}
+            </Button>)}
         </div>
 
         {/* Dashboard Content */}
-        {activeTab === "dashboard" && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {activeTab === "dashboard" && <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {/* Impact Stats */}
             <Card className="col-span-full lg:col-span-2">
               <CardHeader>
@@ -212,12 +216,10 @@ const Index = () => {
                 </div>
               </CardContent>
             </Card>
-          </div>
-        )}
+          </div>}
 
         {/* TrashStep Content */}
-        {activeTab === "trashstep" && (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {activeTab === "trashstep" && <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <QRCodeDisplay userId={user?.id || "user123"} qrData={userQRCode} />
             <TrashStepScanner userId={user?.id || "user123"} onPointsEarned={handlePointsEarned} lastScanTime={lastScanTime} currentStreak={user?.streak || 0} />
             
@@ -236,7 +238,7 @@ const Index = () => {
                       <span>🔥 {t('dashboard.current.streak')}</span>
                       <span>{user?.streak} days</span>
                     </div>
-                    <Progress value={((user?.streak || 0) % 30) * 3.33} className="h-3" />
+                    <Progress value={(user?.streak || 0) % 30 * 3.33} className="h-3" />
                     <div className="text-xs text-gray-600 mt-1">{t('dashboard.next.milestone')}</div>
                   </div>
                   <div>
@@ -250,12 +252,10 @@ const Index = () => {
                 </div>
               </CardContent>
             </Card>
-          </div>
-        )}
+          </div>}
 
         {/* Updated Insurance Content */}
-        {activeTab === "insurance" && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {activeTab === "insurance" && <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Premium Plan */}
             <Card className="border-purple-200">
               <CardHeader className="bg-green-100">
@@ -354,12 +354,10 @@ const Index = () => {
                 </Button>
               </CardContent>
             </Card>
-          </div>
-        )}
+          </div>}
 
         {/* Community Content */}
-        {activeTab === "community" && (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {activeTab === "community" && <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center text-green-700">
@@ -369,23 +367,19 @@ const Index = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {[
-                    {
-                      title: "Community Garden Workshop",
-                      date: "March 15, 2024",
-                      location: "Inya Lake Park",
-                      participants: 24,
-                      points: 25
-                    },
-                    {
-                      title: "Urban Mural Painting",
-                      date: "March 20, 2024",
-                      location: "Downtown Yangon",
-                      participants: 18,
-                      points: 30
-                    }
-                  ].map((event, index) => (
-                    <div key={index} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                  {[{
+                title: "Community Garden Workshop",
+                date: "March 15, 2024",
+                location: "Inya Lake Park",
+                participants: 24,
+                points: 25
+              }, {
+                title: "Urban Mural Painting",
+                date: "March 20, 2024",
+                location: "Downtown Yangon",
+                participants: 18,
+                points: 30
+              }].map((event, index) => <div key={index} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
                       <h3 className="font-semibold text-gray-900 mb-2">{event.title}</h3>
                       <div className="text-sm text-gray-600 space-y-1">
                         <div>📅 {event.date}</div>
@@ -396,42 +390,34 @@ const Index = () => {
                       <Button className="mt-3 w-full bg-green-500 hover:bg-green-600 text-white">
                         {t('community.join')}
                       </Button>
-                    </div>
-                  ))}
+                    </div>)}
                 </div>
               </CardContent>
             </Card>
             <Leaderboard />
-          </div>
-        )}
+          </div>}
 
         {/* Rewards Content */}
-        {activeTab === "rewards" && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {[
-              {
-                name: t('rewards.solar'),
-                points: 500,
-                price: "$50",
-                impact: t('rewards.solar.impact'),
-                category: t('rewards.energy')
-              },
-              {
-                name: t('rewards.bag'),
-                points: 50,
-                price: "$5",
-                impact: t('rewards.bag.impact'),
-                category: t('rewards.lifestyle')
-              },
-              {
-                name: t('rewards.insulation'),
-                points: 300,
-                price: "$30",
-                impact: t('rewards.insulation.impact'),
-                category: t('rewards.home')
-              }
-            ].map((item, index) => (
-              <Card key={index} className="hover:shadow-lg transition-shadow">
+        {activeTab === "rewards" && <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[{
+          name: t('rewards.solar'),
+          points: 500,
+          price: "$50",
+          impact: t('rewards.solar.impact'),
+          category: t('rewards.energy')
+        }, {
+          name: t('rewards.bag'),
+          points: 50,
+          price: "$5",
+          impact: t('rewards.bag.impact'),
+          category: t('rewards.lifestyle')
+        }, {
+          name: t('rewards.insulation'),
+          points: 300,
+          price: "$30",
+          impact: t('rewards.insulation.impact'),
+          category: t('rewards.home')
+        }].map((item, index) => <Card key={index} className="hover:shadow-lg transition-shadow">
                 <CardContent className="p-4">
                   <div className="h-32 bg-gradient-to-br from-green-100 to-blue-100 rounded-lg mb-4 flex items-center justify-center">
                     <Gift className="h-12 w-12 text-green-600" />
@@ -445,23 +431,16 @@ const Index = () => {
                     <div className="text-sm text-gray-600">{item.impact}</div>
                     <Badge className="bg-amber-100 text-amber-800 text-xs">{item.category}</Badge>
                   </div>
-                  <Button 
-                    className="w-full bg-amber-500 hover:bg-amber-600 text-white" 
-                    disabled={(user?.greenPoints || 0) < item.points}
-                  >
+                  <Button className="w-full bg-amber-500 hover:bg-amber-600 text-white" disabled={(user?.greenPoints || 0) < item.points}>
                     {(user?.greenPoints || 0) >= item.points ? t('rewards.redeem') : t('rewards.need.more')}
                   </Button>
                 </CardContent>
-              </Card>
-            ))}
-          </div>
-        )}
+              </Card>)}
+          </div>}
 
         {/* Knowledge Content */}
         {activeTab === "knowledge" && <DisasterKnowledge />}
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default Index;

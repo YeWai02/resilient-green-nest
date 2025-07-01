@@ -63,6 +63,12 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				},
+				// ECOVO Brand Colors - Added as proper Tailwind colors
+				'deep-jungle-green': '#0B3D2E',
+				'warm-clay': '#D96C06',
+				'soft-sky-blue': '#D0EBF4',
+				'earth-beige': '#F5F1E3',
+				'leaf-green': '#6DBE45',
 				// Resilient ASEAN brand colors
 				emerald: {
 					50: '#ecfdf5',

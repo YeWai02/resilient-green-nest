@@ -119,7 +119,7 @@ const HowItWorks: React.FC = () => {
                   {t('how.pillar.education.desc')}
                 </p>
               </CardContent>
-            </div>
+            </Card>
           </div>
         </div>
       </section>

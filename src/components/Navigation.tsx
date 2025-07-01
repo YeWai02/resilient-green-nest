@@ -1,12 +1,19 @@
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Menu, Leaf, X } from "lucide-react";
+import { 
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Menu, Leaf, X, Globe, Languages } from "lucide-react";
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [selectedLanguage, setSelectedLanguage] = useState('English');
   const location = useLocation();
 
   const navItems = [
@@ -21,7 +28,67 @@ const Navigation = () => {
     { name: "Get Involved", path: "/get-involved" }
   ];
 
+  // ASEAN languages for Google Translate
+  const languages = [
+    { label: 'English', value: '/auto/en', flag: '🇺🇸' },
+    { label: 'Bahasa Indonesia', value: '/auto/id', flag: '🇮🇩' },
+    { label: 'Bahasa Malaysia', value: '/auto/ms', flag: '🇲🇾' },
+    { label: 'ไทย (Thai)', value: '/auto/th', flag: '🇹🇭' },
+    { label: 'Tiếng Việt', value: '/auto/vi', flag: '🇻🇳' },
+    { label: 'Filipino', value: '/auto/tl', flag: '🇵🇭' },
+    { label: 'မြန်မာ (Burmese)', value: '/auto/my', flag: '🇲🇲' },
+    { label: 'ខ្មែរ (Khmer)', value: '/auto/km', flag: '🇰🇭' },
+    { label: 'ລາວ (Lao)', value: '/auto/lo', flag: '🇱🇦' },
+    { label: '中文 (Chinese)', value: '/auto/zh-CN', flag: '🇨🇳' },
+    { label: 'தமிழ் (Tamil)', value: '/auto/ta', flag: '🇮🇳' },
+  ];
+
   const isActive = (path: string) => location.pathname === path;
+
+  // Initialize Google Translate
+  useEffect(() => {
+    // Check if Google Translate script is already loaded
+    if (!window.google?.translate) {
+      const script = document.createElement('script');
+      script.src = '//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
+      script.async = true;
+      document.body.appendChild(script);
+
+      // Initialize Google Translate when the script is loaded
+      (window as any).googleTranslateElementInit = () => {
+        new (window as any).google.translate.TranslateElement(
+          {
+            pageLanguage: 'auto',
+            autoDisplay: false,
+            includedLanguages: 'en,id,ms,th,vi,tl,my,km,lo,zh-CN,ta',
+            layout: (window as any).google.translate.TranslateElement.InlineLayout.SIMPLE,
+          },
+          'google_translate_element'
+        );
+      };
+    }
+
+    // Set default language
+    const savedLang = localStorage.getItem('selectedLanguage');
+    if (savedLang) {
+      setSelectedLanguage(savedLang);
+    }
+  }, []);
+
+  // Handle language change
+  const handleLanguageChange = (language: typeof languages[0]) => {
+    setSelectedLanguage(language.label);
+    localStorage.setItem('selectedLanguage', language.label);
+    
+    // Set Google Translate cookie
+    const cookieValue = language.value;
+    document.cookie = `googtrans=${cookieValue}; path=/; max-age=31536000`;
+    
+    // Reload page to apply translation
+    setTimeout(() => {
+      window.location.reload();
+    }, 100);
+  };
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-lg border-b border-green-100 shadow-sm">
@@ -52,10 +119,53 @@ const Navigation = () => {
                 {item.name}
               </Link>
             ))}
+            
+            {/* Language Selector */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm" className="ml-2 border-green-200 hover:bg-green-50">
+                  <Globe className="h-4 w-4 mr-2" />
+                  <span className="hidden sm:inline">{selectedLanguage}</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48 max-h-64 overflow-y-auto">
+                {languages.map((language) => (
+                  <DropdownMenuItem
+                    key={language.value}
+                    onClick={() => handleLanguageChange(language)}
+                    className="cursor-pointer hover:bg-green-50"
+                  >
+                    <span className="mr-2">{language.flag}</span>
+                    {language.label}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
 
           {/* Mobile Navigation */}
-          <div className="lg:hidden">
+          <div className="lg:hidden flex items-center space-x-2">
+            {/* Mobile Language Selector */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" className="p-2">
+                  <Languages className="h-5 w-5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48 max-h-64 overflow-y-auto">
+                {languages.map((language) => (
+                  <DropdownMenuItem
+                    key={language.value}
+                    onClick={() => handleLanguageChange(language)}
+                    className="cursor-pointer hover:bg-green-50"
+                  >
+                    <span className="mr-2">{language.flag}</span>
+                    {language.label}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
               <SheetTrigger asChild>
                 <Button variant="ghost" size="sm" className="p-2">
@@ -96,6 +206,19 @@ const Navigation = () => {
           </div>
         </div>
       </div>
+
+      {/* Hidden Google Translate Element */}
+      <div
+        id="google_translate_element"
+        style={{
+          width: '0px',
+          height: '0px',
+          visibility: 'hidden',
+          position: 'absolute',
+          left: '50%',
+          zIndex: -9999,
+        }}
+      />
     </nav>
   );
 };

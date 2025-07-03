@@ -6,13 +6,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 
-declare global {
-  interface Window {
-    google: any;
-    initMap: () => void;
-  }
-}
-
 interface WeatherData {
   temperature: number;
   humidity: number;
@@ -63,7 +56,7 @@ const FloodHazardMap = () => {
   };
 
   const loadGoogleMapsScript = () => {
-    if (window.google) {
+    if ((window as any).google) {
       initializeMap();
       return;
     }
@@ -74,13 +67,14 @@ const FloodHazardMap = () => {
     script.defer = true;
     document.head.appendChild(script);
 
-    window.initMap = initializeMap;
+    (window as any).initMap = initializeMap;
   };
 
   const initializeMap = () => {
-    if (!mapRef.current || !window.google) return;
+    if (!mapRef.current || !(window as any).google) return;
 
-    const mapInstance = new window.google.maps.Map(mapRef.current, {
+    const google = (window as any).google;
+    const mapInstance = new google.maps.Map(mapRef.current, {
       zoom: 5,
       center: { lat: 10.8231, lng: 106.6297 }, // Centered on Southeast Asia
       mapTypeId: 'hybrid',
@@ -100,17 +94,17 @@ const FloodHazardMap = () => {
       const weather = getWeatherData(area);
       area.weather = weather;
 
-      const marker = new window.google.maps.Marker({
+      const marker = new google.maps.Marker({
         position: { lat: area.lat, lng: area.lng },
         map: mapInstance,
         title: area.name,
         icon: {
           url: getMarkerIcon(area.risk),
-          scaledSize: new window.google.maps.Size(40, 40)
+          scaledSize: new google.maps.Size(40, 40)
         }
       });
 
-      const infoWindow = new window.google.maps.InfoWindow({
+      const infoWindow = new google.maps.InfoWindow({
         content: `
           <div style="padding: 10px; max-width: 300px;">
             <h3 style="margin: 0 0 8px 0; color: #1f2937; font-size: 16px; font-weight: bold;">${area.name}</h3>

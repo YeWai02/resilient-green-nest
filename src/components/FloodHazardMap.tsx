@@ -1,5 +1,3 @@
-
-
 import React, { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import { Card, CardContent } from '@/components/ui/card';
@@ -130,7 +128,7 @@ const FloodHazardMap = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const createCustomIcon = (risk: string) => {
+  const createCustomIcon = (risk: string): L.Icon => {
     const colors = {
       'Critical': '#dc2626',
       'High': '#ea580c', 
@@ -221,7 +219,7 @@ const FloodHazardMap = () => {
       {/* Map Section */}
       <div className="relative">
         <MapContainer
-          center={L.latLng(10.8231, 106.6297)}
+          center={[10.8231, 106.6297]}
           zoom={5}
           className="w-full h-96 rounded-lg shadow-lg"
         >
@@ -236,7 +234,7 @@ const FloodHazardMap = () => {
             return (
               <Marker
                 key={index}
-                position={L.latLng(area.lat, area.lng)}
+                position={[area.lat, area.lng]}
                 icon={createCustomIcon(area.risk)}
                 eventHandlers={{
                   click: () => setSelectedArea(area)
@@ -347,4 +345,3 @@ const FloodHazardMap = () => {
 };
 
 export default FloodHazardMap;
-

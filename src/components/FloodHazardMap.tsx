@@ -217,7 +217,7 @@ const FloodHazardMap = () => {
       {/* Map Section */}
       <div className="relative">
         <MapContainer
-          center={[10.8231, 106.6297]}
+          center={L.latLng(10.8231, 106.6297)}
           zoom={5}
           className="w-full h-96 rounded-lg shadow-lg"
         >
@@ -233,7 +233,7 @@ const FloodHazardMap = () => {
             return (
               <Marker
                 key={index}
-                position={[area.lat, area.lng]}
+                position={L.latLng(area.lat, area.lng)}
                 icon={createCustomIcon(area.risk)}
                 eventHandlers={{
                   click: () => setSelectedArea(area)

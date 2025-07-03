@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import { Card, CardContent } from '@/components/ui/card';
@@ -219,7 +220,7 @@ const FloodHazardMap = () => {
       {/* Map Section */}
       <div className="relative">
         <MapContainer
-          center={[10.8231, 106.6297]}
+          center={[10.8231, 106.6297] as [number, number]}
           zoom={5}
           className="w-full h-96 rounded-lg shadow-lg"
         >
@@ -234,7 +235,7 @@ const FloodHazardMap = () => {
             return (
               <Marker
                 key={index}
-                position={[area.lat, area.lng]}
+                position={[area.lat, area.lng] as [number, number]}
                 icon={createCustomIcon(area.risk)}
                 eventHandlers={{
                   click: () => setSelectedArea(area)

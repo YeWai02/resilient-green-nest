@@ -1,10 +1,21 @@
 
-import React, { useEffect, useRef, useState } from 'react';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Button } from '@/components/ui/button';
+import React, { useState, useEffect } from 'react';
+import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { AlertTriangle, Siren, Cloud, Thermometer, Droplets, Wind } from 'lucide-react';
+import 'leaflet/dist/leaflet.css';
+import L from 'leaflet';
+
+// Fix for default markers in react-leaflet
+delete (L.Icon.Default.prototype as any)._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
+  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+});
 
 interface WeatherData {
   temperature: number;
@@ -23,12 +34,19 @@ interface FloodArea {
   weather?: WeatherData;
 }
 
+interface DisasterAlert {
+  id: string;
+  type: 'flood' | 'storm' | 'warning';
+  severity: 'critical' | 'high' | 'medium';
+  location: string;
+  message: string;
+  timestamp: Date;
+  active: boolean;
+}
+
 const FloodHazardMap = () => {
-  const mapRef = useRef<HTMLDivElement>(null);
-  const [apiKey, setApiKey] = useState('');
-  const [mapInitialized, setMapInitialized] = useState(false);
-  const [map, setMap] = useState<any>(null);
   const [selectedArea, setSelectedArea] = useState<FloodArea | null>(null);
+  const [disasterAlerts, setDisasterAlerts] = useState<DisasterAlert[]>([]);
 
   // Coastal flood hazard areas in Southeast Asia
   const floodHazardAreas: FloodArea[] = [
@@ -44,7 +62,7 @@ const FloodHazardMap = () => {
     { name: 'Penang, Malaysia', lat: 5.4164, lng: 100.3327, risk: 'Medium', description: 'Coastal flooding during monsoons' }
   ];
 
-  // Simulate weather data (in a real app, you'd fetch from a weather API)
+  // Simulate weather data
   const getWeatherData = (area: FloodArea): WeatherData => {
     const weatherConditions = [
       { temperature: 28, humidity: 85, precipitation: 15, windSpeed: 12, description: 'Heavy rain expected' },
@@ -55,193 +73,273 @@ const FloodHazardMap = () => {
     return weatherConditions[Math.floor(Math.random() * weatherConditions.length)];
   };
 
-  const loadGoogleMapsScript = () => {
-    if ((window as any).google) {
-      initializeMap();
-      return;
-    }
-
-    const script = document.createElement('script');
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&callback=initMap`;
-    script.async = true;
-    script.defer = true;
-    document.head.appendChild(script);
-
-    (window as any).initMap = initializeMap;
-  };
-
-  const initializeMap = () => {
-    if (!mapRef.current || !(window as any).google) return;
-
-    const google = (window as any).google;
-    const mapInstance = new google.maps.Map(mapRef.current, {
-      zoom: 5,
-      center: { lat: 10.8231, lng: 106.6297 }, // Centered on Southeast Asia
-      mapTypeId: 'hybrid',
-      styles: [
+  // Generate sample disaster alerts
+  useEffect(() => {
+    const generateAlerts = () => {
+      const alerts: DisasterAlert[] = [
         {
-          featureType: 'water',
-          elementType: 'geometry',
-          stylers: [{ color: '#193341' }]
+          id: '1',
+          type: 'flood',
+          severity: 'critical',
+          location: 'Jakarta, Indonesia',
+          message: 'Flash flood warning issued. Water levels rising rapidly in central districts.',
+          timestamp: new Date(Date.now() - 30 * 60 * 1000), // 30 minutes ago
+          active: true
+        },
+        {
+          id: '2',
+          type: 'storm',
+          severity: 'high',
+          location: 'Da Nang, Vietnam',
+          message: 'Typhoon approaching. Expected landfall in 6 hours. Evacuate coastal areas.',
+          timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
+          active: true
+        },
+        {
+          id: '3',
+          type: 'warning',
+          severity: 'medium',
+          location: 'Bangkok, Thailand',
+          message: 'Monsoon rains expected. Monitor water levels in low-lying areas.',
+          timestamp: new Date(Date.now() - 45 * 60 * 1000), // 45 minutes ago
+          active: true
         }
-      ]
-    });
-
-    setMap(mapInstance);
-
-    // Add markers for flood hazard areas
-    floodHazardAreas.forEach((area) => {
-      const weather = getWeatherData(area);
-      area.weather = weather;
-
-      const marker = new google.maps.Marker({
-        position: { lat: area.lat, lng: area.lng },
-        map: mapInstance,
-        title: area.name,
-        icon: {
-          url: getMarkerIcon(area.risk),
-          scaledSize: new google.maps.Size(40, 40)
-        }
-      });
-
-      const infoWindow = new google.maps.InfoWindow({
-        content: `
-          <div style="padding: 10px; max-width: 300px;">
-            <h3 style="margin: 0 0 8px 0; color: #1f2937; font-size: 16px; font-weight: bold;">${area.name}</h3>
-            <p style="margin: 0 0 8px 0; color: #6b7280; font-size: 14px;">${area.description}</p>
-            <div style="margin: 8px 0;">
-              <span style="font-weight: bold; color: ${getRiskColor(area.risk)};">Risk Level: ${area.risk}</span>
-            </div>
-            <div style="border-top: 1px solid #e5e7eb; padding-top: 8px; margin-top: 8px;">
-              <h4 style="margin: 0 0 4px 0; color: #1f2937; font-size: 14px;">Current Weather</h4>
-              <p style="margin: 2px 0; font-size: 12px; color: #6b7280;">${weather.description}</p>
-              <div style="display: flex; justify-content: space-between; font-size: 12px; color: #6b7280;">
-                <span>🌡️ ${weather.temperature}°C</span>
-                <span>💧 ${weather.humidity}%</span>
-                <span>🌧️ ${weather.precipitation}mm</span>
-                <span>💨 ${weather.windSpeed}km/h</span>
-              </div>
-            </div>
-          </div>
-        `
-      });
-
-      marker.addListener('click', () => {
-        infoWindow.open(mapInstance, marker);
-        setSelectedArea(area);
-      });
-    });
-
-    setMapInitialized(true);
-  };
-
-  const getMarkerIcon = (risk: string) => {
-    const colors = {
-      'Critical': 'red',
-      'High': 'orange', 
-      'Medium': 'yellow',
-      'Low': 'green'
+      ];
+      setDisasterAlerts(alerts);
     };
-    return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(`
-      <svg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="20" cy="20" r="18" fill="${colors[risk as keyof typeof colors]}" stroke="white" stroke-width="2"/>
-        <text x="20" y="25" text-anchor="middle" fill="white" font-family="Arial" font-size="12" font-weight="bold">!</text>
-      </svg>
-    `)}`;
+
+    generateAlerts();
+    
+    // Simulate new alerts every 2 minutes
+    const interval = setInterval(() => {
+      if (Math.random() < 0.3) { // 30% chance of new alert
+        const newAlert: DisasterAlert = {
+          id: Date.now().toString(),
+          type: Math.random() < 0.5 ? 'flood' : 'warning',
+          severity: Math.random() < 0.3 ? 'critical' : 'high',
+          location: floodHazardAreas[Math.floor(Math.random() * floodHazardAreas.length)].name,
+          message: 'Water level monitoring alert. Residents advised to stay alert.',
+          timestamp: new Date(),
+          active: true
+        };
+        setDisasterAlerts(prev => [newAlert, ...prev.slice(0, 4)]);
+      }
+    }, 120000); // Every 2 minutes
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const createCustomIcon = (risk: string) => {
+    const colors = {
+      'Critical': '#dc2626',
+      'High': '#ea580c', 
+      'Medium': '#ca8a04',
+      'Low': '#16a34a'
+    };
+
+    return L.divIcon({
+      html: `<div style="background-color: ${colors[risk as keyof typeof colors]}; width: 20px; height: 20px; border-radius: 50%; border: 2px solid white; display: flex; align-items: center; justify-content: center;">
+        <span style="color: white; font-size: 12px; font-weight: bold;">!</span>
+      </div>`,
+      className: 'custom-marker',
+      iconSize: [20, 20],
+      iconAnchor: [10, 10]
+    });
   };
 
-  const getRiskColor = (risk: string) => {
-    switch (risk) {
-      case 'Critical': return '#dc2626';
-      case 'High': return '#ea580c';
-      case 'Medium': return '#ca8a04';
-      case 'Low': return '#16a34a';
-      default: return '#6b7280';
+  const getAlertIcon = (type: string) => {
+    switch (type) {
+      case 'flood': return <Droplets className="h-4 w-4" />;
+      case 'storm': return <Wind className="h-4 w-4" />;
+      default: return <AlertTriangle className="h-4 w-4" />;
     }
   };
 
-  const initializeMapWithKey = () => {
-    if (!apiKey) return;
-    loadGoogleMapsScript();
+  const getAlertColor = (severity: string) => {
+    switch (severity) {
+      case 'critical': return 'border-red-500 bg-red-50';
+      case 'high': return 'border-orange-500 bg-orange-50';
+      default: return 'border-yellow-500 bg-yellow-50';
+    }
+  };
+
+  const dismissAlert = (alertId: string) => {
+    setDisasterAlerts(prev => prev.filter(alert => alert.id !== alertId));
   };
 
   return (
     <div className="w-full">
-      {!mapInitialized ? (
-        <Card className="max-w-md mx-auto">
-          <CardContent className="p-6">
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="google-maps-key">Google Maps API Key</Label>
-                <Input
-                  id="google-maps-key"
-                  type="text"
-                  placeholder="Enter your Google Maps API key"
-                  value={apiKey}
-                  onChange={(e) => setApiKey(e.target.value)}
-                />
-                <p className="text-xs text-gray-600 mt-1">
-                  Get your API key from <a href="https://console.cloud.google.com/apis/credentials" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Google Cloud Console</a>
-                </p>
-              </div>
-              <Button onClick={initializeMapWithKey} disabled={!apiKey} className="w-full">
-                Load Flood Risk Map
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      ) : (
-        <div className="relative">
-          <div ref={mapRef} className="w-full h-96 rounded-lg shadow-lg" />
+      {/* Disaster Alerts System */}
+      <div className="mb-6">
+        <div className="flex items-center gap-2 mb-4">
+          <Siren className="h-5 w-5 text-red-500" />
+          <h3 className="text-lg font-semibold text-gray-900">Active Disaster Alerts</h3>
+        </div>
+        
+        {disasterAlerts.length > 0 ? (
+          <div className="space-y-3 max-h-64 overflow-y-auto">
+            {disasterAlerts.map((alert) => (
+              <Alert key={alert.id} className={`${getAlertColor(alert.severity)} border-l-4`}>
+                <div className="flex items-start justify-between">
+                  <div className="flex items-start gap-3">
+                    {getAlertIcon(alert.type)}
+                    <div className="flex-1">
+                      <AlertTitle className="text-sm font-medium">
+                        {alert.location} - {alert.severity.toUpperCase()} {alert.type.toUpperCase()}
+                      </AlertTitle>
+                      <AlertDescription className="text-sm text-gray-600 mt-1">
+                        {alert.message}
+                      </AlertDescription>
+                      <div className="text-xs text-gray-500 mt-2">
+                        {alert.timestamp.toLocaleString()}
+                      </div>
+                    </div>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => dismissAlert(alert.id)}
+                    className="text-gray-400 hover:text-gray-600"
+                  >
+                    ×
+                  </Button>
+                </div>
+              </Alert>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-6 text-gray-500">
+            <AlertTriangle className="h-8 w-8 mx-auto mb-2 opacity-50" />
+            <p>No active alerts at this time</p>
+          </div>
+        )}
+      </div>
+
+      {/* Map Section */}
+      <div className="relative">
+        <MapContainer
+          center={[10.8231, 106.6297]}
+          zoom={5}
+          className="w-full h-96 rounded-lg shadow-lg"
+        >
+          <TileLayer
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          />
           
-          {/* Risk Legend */}
-          <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm rounded-lg p-3 shadow-lg">
-            <h4 className="font-semibold text-sm mb-2">Flood Risk Legend</h4>
-            <div className="space-y-1 text-xs">
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-red-600 rounded-full"></div>
-                <span>Critical Risk</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-orange-600 rounded-full"></div>
-                <span>High Risk</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-yellow-600 rounded-full"></div>
-                <span>Medium Risk</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-green-600 rounded-full"></div>
-                <span>Low Risk</span>
-              </div>
+          {floodHazardAreas.map((area, index) => {
+            const weather = getWeatherData(area);
+            area.weather = weather;
+            
+            return (
+              <Marker
+                key={index}
+                position={[area.lat, area.lng]}
+                icon={createCustomIcon(area.risk)}
+                eventHandlers={{
+                  click: () => setSelectedArea(area)
+                }}
+              >
+                <Popup>
+                  <div className="p-2 max-w-xs">
+                    <h3 className="font-bold text-gray-900 mb-1">{area.name}</h3>
+                    <p className="text-sm text-gray-600 mb-2">{area.description}</p>
+                    <Badge className={`mb-2 ${
+                      area.risk === 'Critical' ? 'bg-red-100 text-red-700' :
+                      area.risk === 'High' ? 'bg-orange-100 text-orange-700' :
+                      area.risk === 'Medium' ? 'bg-yellow-100 text-yellow-700' :
+                      'bg-green-100 text-green-700'
+                    }`}>
+                      {area.risk} Risk
+                    </Badge>
+                    <div className="border-t pt-2 mt-2">
+                      <div className="text-xs font-medium mb-1">Current Weather</div>
+                      <div className="text-xs text-gray-600 mb-1">{weather.description}</div>
+                      <div className="grid grid-cols-2 gap-1 text-xs">
+                        <div className="flex items-center gap-1">
+                          <Thermometer className="h-3 w-3" />
+                          {weather.temperature}°C
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Droplets className="h-3 w-3" />
+                          {weather.humidity}%
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Cloud className="h-3 w-3" />
+                          {weather.precipitation}mm
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Wind className="h-3 w-3" />
+                          {weather.windSpeed}km/h
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </Popup>
+              </Marker>
+            );
+          })}
+        </MapContainer>
+
+        {/* Risk Legend */}
+        <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm rounded-lg p-3 shadow-lg z-[1000]">
+          <h4 className="font-semibold text-sm mb-2">Flood Risk Legend</h4>
+          <div className="space-y-1 text-xs">
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 bg-red-600 rounded-full"></div>
+              <span>Critical Risk</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 bg-orange-600 rounded-full"></div>
+              <span>High Risk</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 bg-yellow-600 rounded-full"></div>
+              <span>Medium Risk</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 bg-green-600 rounded-full"></div>
+              <span>Low Risk</span>
             </div>
           </div>
+        </div>
 
-          {/* Weather Info Panel */}
-          {selectedArea && selectedArea.weather && (
-            <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm rounded-lg p-4 shadow-lg max-w-xs">
-              <h4 className="font-semibold text-sm mb-2">{selectedArea.name}</h4>
-              <Badge className={`mb-2 ${
-                selectedArea.risk === 'Critical' ? 'bg-red-100 text-red-700' :
-                selectedArea.risk === 'High' ? 'bg-orange-100 text-orange-700' :
-                selectedArea.risk === 'Medium' ? 'bg-yellow-100 text-yellow-700' :
-                'bg-green-100 text-green-700'
-              }`}>
-                {selectedArea.risk} Risk
-              </Badge>
-              <div className="text-xs space-y-1">
-                <div className="font-medium">{selectedArea.weather.description}</div>
-                <div className="grid grid-cols-2 gap-1 text-gray-600">
-                  <span>🌡️ {selectedArea.weather.temperature}°C</span>
-                  <span>💧 {selectedArea.weather.humidity}%</span>
-                  <span>🌧️ {selectedArea.weather.precipitation}mm</span>
-                  <span>💨 {selectedArea.weather.windSpeed}km/h</span>
+        {/* Weather Info Panel */}
+        {selectedArea && selectedArea.weather && (
+          <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm rounded-lg p-4 shadow-lg max-w-xs z-[1000]">
+            <h4 className="font-semibold text-sm mb-2">{selectedArea.name}</h4>
+            <Badge className={`mb-2 ${
+              selectedArea.risk === 'Critical' ? 'bg-red-100 text-red-700' :
+              selectedArea.risk === 'High' ? 'bg-orange-100 text-orange-700' :
+              selectedArea.risk === 'Medium' ? 'bg-yellow-100 text-yellow-700' :
+              'bg-green-100 text-green-700'
+            }`}>
+              {selectedArea.risk} Risk
+            </Badge>
+            <div className="text-xs space-y-2">
+              <div className="font-medium">{selectedArea.weather.description}</div>
+              <div className="grid grid-cols-2 gap-2">
+                <div className="flex items-center gap-1 text-gray-600">
+                  <Thermometer className="h-3 w-3" />
+                  <span>{selectedArea.weather.temperature}°C</span>
+                </div>
+                <div className="flex items-center gap-1 text-gray-600">
+                  <Droplets className="h-3 w-3" />
+                  <span>{selectedArea.weather.humidity}%</span>
+                </div>
+                <div className="flex items-center gap-1 text-gray-600">
+                  <Cloud className="h-3 w-3" />
+                  <span>{selectedArea.weather.precipitation}mm</span>
+                </div>
+                <div className="flex items-center gap-1 text-gray-600">
+                  <Wind className="h-3 w-3" />
+                  <span>{selectedArea.weather.windSpeed}km/h</span>
                 </div>
               </div>
             </div>
-          )}
-        </div>
-      )}
+          </div>
+        )}
+      </div>
     </div>
   );
 };

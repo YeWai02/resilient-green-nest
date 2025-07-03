@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import { Card, CardContent } from '@/components/ui/card';
@@ -129,7 +128,7 @@ const FloodHazardMap = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const createCustomIcon = (risk: string): L.Icon => {
+  const createCustomIcon = (risk: string) => {
     const colors = {
       'Critical': '#dc2626',
       'High': '#ea580c', 
@@ -137,13 +136,9 @@ const FloodHazardMap = () => {
       'Low': '#16a34a'
     };
 
-    return L.icon({
-      iconUrl: `data:image/svg+xml;base64,${btoa(`
-        <svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="10" cy="10" r="8" fill="${colors[risk as keyof typeof colors]}" stroke="white" stroke-width="2"/>
-          <text x="10" y="14" text-anchor="middle" fill="white" font-size="12" font-weight="bold">!</text>
-        </svg>
-      `)}`,
+    return L.divIcon({
+      html: `<div style="background-color: ${colors[risk as keyof typeof colors]}; width: 20px; height: 20px; border-radius: 50%; border: 2px solid white; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 12px;">!</div>`,
+      className: 'custom-div-icon',
       iconSize: [20, 20],
       iconAnchor: [10, 10],
     });
@@ -220,7 +215,7 @@ const FloodHazardMap = () => {
       {/* Map Section */}
       <div className="relative">
         <MapContainer
-          center={[10.8231, 106.6297] as [number, number]}
+          center={L.latLng(10.8231, 106.6297)}
           zoom={5}
           className="w-full h-96 rounded-lg shadow-lg"
         >
@@ -235,7 +230,7 @@ const FloodHazardMap = () => {
             return (
               <Marker
                 key={index}
-                position={[area.lat, area.lng] as [number, number]}
+                position={L.latLng(area.lat, area.lng)}
                 icon={createCustomIcon(area.risk)}
                 eventHandlers={{
                   click: () => setSelectedArea(area)

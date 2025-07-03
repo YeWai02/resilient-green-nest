@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Shield, MapPin, Zap, Users, CheckCircle, Play, ArrowRight, Phone, Mail } from "lucide-react";
 import Navigation from "@/components/Navigation";
+import FloodHazardMap from "@/components/FloodHazardMap";
 
 const HyfloProtection = () => {
   const [requestForm, setRequestForm] = useState({
@@ -114,20 +114,16 @@ const HyfloProtection = () => {
         </div>
       </section>
 
-      {/* Video Demo Section */}
+      {/* Flood Hazard Map Section */}
       <section className="py-16 px-4 sm:px-6 lg:px-8 bg-white/80 backdrop-blur-sm">
         <div className="max-w-6xl mx-auto text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-8">
-            See HYFLO in Action
+            HYFLO Flood Risk Assessment
           </h2>
-          <div className="relative bg-gray-900 rounded-3xl overflow-hidden shadow-2xl">
-            <div className="aspect-video bg-gradient-to-br from-blue-600 to-green-600 flex items-center justify-center">
-              <Button className="bg-white/20 backdrop-blur-md border-white/20 text-white hover:bg-white/30 px-8 py-4 rounded-full shadow-lg">
-                <Play className="h-8 w-8 mr-3" />
-                <span className="text-lg font-medium">Play Demo Video</span>
-              </Button>
-            </div>
-          </div>
+          <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
+            Interactive map showing current flood hazard zones across Southeast Asia where HYFLO protection is most critical.
+          </p>
+          <FloodHazardMap />
         </div>
       </section>
 

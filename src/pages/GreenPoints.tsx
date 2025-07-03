@@ -1,10 +1,10 @@
-
 import { useState } from "react";
 import Navigation from "@/components/Navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
+import CheckoutModal from "@/components/CheckoutModal";
 import { 
   Trophy, 
   Star, 
@@ -14,21 +14,32 @@ import {
   Zap,
   Award,
   Target,
-  TrendingUp
+  TrendingUp,
+  QrCode,
+  Scan,
+  Shield
 } from "lucide-react";
 
 const GreenPoints = () => {
   const [userPoints] = useState(2850);
   const nextRewardThreshold = 3000;
   const progressPercentage = (userPoints / nextRewardThreshold) * 100;
+  const [checkoutModal, setCheckoutModal] = useState<{
+    isOpen: boolean;
+    reward: { name: string; points: number } | null;
+  }>({
+    isOpen: false,
+    reward: null
+  });
 
   const actions = [
-    { name: "Attend Workshop", points: 100, icon: Users, description: "Join our community workshops" },
-    { name: "TrashStep Scan", points: 50, icon: Recycle, description: "Use smart bins for recycling" },
-    { name: "Clothes Donation", points: 200, points_text: "200+", icon: Gift, description: "Donate through ECOVO" },
-    { name: "Insurance Signup", points: 500, icon: Award, description: "Get climate protection" },
-    { name: "HYFLO Request", points: 150, icon: Zap, description: "Request flood protection" },
-    { name: "Refer Friend", points: 300, icon: Users, description: "Invite others to join" }
+    { name: "QR Code Scan", points: 25, icon: QrCode, description: "Scan QR codes at eco-friendly locations", method: "QR Scanning" },
+    { name: "TrashStep Scan", points: 50, icon: Scan, description: "Use smart bins for recycling", method: "TrashStep Program" },
+    { name: "Old Cloth New Hope", points: 200, points_text: "200+", icon: Gift, description: "Donate clothes for recycling", method: "Cloth Donation Program" },
+    { name: "Insurance Signup", points: 500, icon: Shield, description: "Get climate protection coverage", method: "Insurance Program" },
+    { name: "Attend Workshop", points: 100, icon: Users, description: "Join our community workshops", method: "Community Events" },
+    { name: "HYFLO Request", points: 150, icon: Zap, description: "Request flood protection for your area", method: "HYFLO Program" },
+    { name: "Refer Friend", points: 300, icon: Users, description: "Invite others to join ECOVO", method: "Referral Program" }
   ];
 
   const rewards = [
@@ -46,6 +57,20 @@ const GreenPoints = () => {
     { name: "Soe Wai", points: 6750, rank: 3, city: "Yangon" },
     { name: "You", points: userPoints, rank: 12, city: "Thanlyin" },
   ];
+
+  const handleRedeemClick = (reward: { name: string; points: number }) => {
+    setCheckoutModal({
+      isOpen: true,
+      reward
+    });
+  };
+
+  const handleCloseCheckout = () => {
+    setCheckoutModal({
+      isOpen: false,
+      reward: null
+    });
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
@@ -91,6 +116,35 @@ const GreenPoints = () => {
             </CardContent>
           </Card>
 
+          {/* How to Earn Points Section */}
+          <Card className="mb-12 bg-white/70 backdrop-blur-sm border-0 shadow-xl">
+            <CardHeader>
+              <CardTitle className="flex items-center text-2xl text-gray-900">
+                <QrCode className="h-6 w-6 mr-3 text-green-500" />
+                How to Earn Green Points
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                <div className="text-center p-6 bg-gradient-to-br from-blue-50 to-green-50 rounded-xl">
+                  <QrCode className="h-12 w-12 text-blue-500 mx-auto mb-4" />
+                  <h3 className="font-semibold text-gray-900 mb-2">QR Code Scanning</h3>
+                  <p className="text-sm text-gray-600">Scan QR codes at partner locations, events, and eco-friendly venues to earn instant points</p>
+                </div>
+                <div className="text-center p-6 bg-gradient-to-br from-green-50 to-blue-50 rounded-xl">
+                  <Scan className="h-12 w-12 text-green-500 mx-auto mb-4" />
+                  <h3 className="font-semibold text-gray-900 mb-2">TrashStep Program</h3>
+                  <p className="text-sm text-gray-600">Use smart recycling bins and scan items to earn points for proper waste disposal</p>
+                </div>
+                <div className="text-center p-6 bg-gradient-to-br from-blue-50 to-green-50 rounded-xl">
+                  <Gift className="h-12 w-12 text-purple-500 mx-auto mb-4" />
+                  <h3 className="font-semibold text-gray-900 mb-2">Old Cloth New Hope</h3>
+                  <p className="text-sm text-gray-600">Donate old clothes through our recycling program and earn points for each item</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
           <div className="grid lg:grid-cols-3 gap-8 mb-12">
             
             {/* Earn Points Section */}
@@ -99,7 +153,7 @@ const GreenPoints = () => {
                 <CardHeader>
                   <CardTitle className="flex items-center text-2xl text-gray-900">
                     <Target className="h-6 w-6 mr-3 text-green-500" />
-                    Earn Points
+                    Available Actions
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -117,6 +171,7 @@ const GreenPoints = () => {
                         <div className="ml-4 flex-1">
                           <h3 className="font-semibold text-gray-900">{action.name}</h3>
                           <p className="text-sm text-gray-600">{action.description}</p>
+                          <Badge variant="secondary" className="text-xs mt-1">{action.method}</Badge>
                         </div>
                         <div className="text-right">
                           <span className="text-2xl font-bold text-green-600">
@@ -202,6 +257,7 @@ const GreenPoints = () => {
                       </p>
                       <Button 
                         disabled={!reward.available || userPoints < reward.points}
+                        onClick={() => reward.available && userPoints >= reward.points && handleRedeemClick(reward)}
                         className={`w-full ${
                           reward.available && userPoints >= reward.points
                             ? "bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600"
@@ -221,9 +277,15 @@ const GreenPoints = () => {
               </div>
             </CardContent>
           </Card>
-
         </div>
       </div>
+
+      <CheckoutModal
+        isOpen={checkoutModal.isOpen}
+        onClose={handleCloseCheckout}
+        reward={checkoutModal.reward}
+        userPoints={userPoints}
+      />
     </div>
   );
 };

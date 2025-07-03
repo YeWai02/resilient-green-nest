@@ -137,13 +137,15 @@ const FloodHazardMap = () => {
       'Low': '#16a34a'
     };
 
-    return L.divIcon({
-      html: `<div style="background-color: ${colors[risk as keyof typeof colors]}; width: 20px; height: 20px; border-radius: 50%; border: 2px solid white; display: flex; align-items: center; justify-content: center;">
-        <span style="color: white; font-size: 12px; font-weight: bold;">!</span>
-      </div>`,
-      className: 'custom-marker',
+    return new L.Icon({
+      iconUrl: `data:image/svg+xml;base64,${btoa(`
+        <svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="10" cy="10" r="8" fill="${colors[risk as keyof typeof colors]}" stroke="white" stroke-width="2"/>
+          <text x="10" y="14" text-anchor="middle" fill="white" font-size="12" font-weight="bold">!</text>
+        </svg>
+      `)}`,
       iconSize: [20, 20],
-      iconAnchor: [10, 10]
+      iconAnchor: [10, 10],
     });
   };
 
@@ -218,13 +220,12 @@ const FloodHazardMap = () => {
       {/* Map Section */}
       <div className="relative">
         <MapContainer
-          center={[10.8231, 106.6297] as [number, number]}
+          center={[10.8231, 106.6297]}
           zoom={5}
           className="w-full h-96 rounded-lg shadow-lg"
         >
           <TileLayer
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           />
           
           {floodHazardAreas.map((area, index) => {
@@ -234,7 +235,7 @@ const FloodHazardMap = () => {
             return (
               <Marker
                 key={index}
-                position={[area.lat, area.lng] as [number, number]}
+                position={[area.lat, area.lng]}
                 icon={createCustomIcon(area.risk)}
                 eventHandlers={{
                   click: () => setSelectedArea(area)
